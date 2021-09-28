@@ -37,8 +37,21 @@ struct aggregate_initializable_with_n_types;
 template<typename aggregate_type,std::size_t count,std::size_t... indices>
 struct aggregate_initializable_with_n_types<aggregate_type,count,std::index_sequence<indices...>>
 {
-    static inline constexpr std::size_t value = std::is_constructible_v<aggregate_type,decltype(wildcard(indices))...>;
+    static inline constexpr bool value = std::is_constructible_v<aggregate_type,decltype(wildcard(indices))...>;
 };
+
+template<typename aggregate_type,std::size_t index = 0>
+constexpr std::size_t get_aggregate_member_count()
+{
+    if constexpr(!aggregate_initializable_with_n_types<aggregate_type,index>::value)
+    {
+        return index - 1;
+    }
+    else
+    {
+        return get_aggregate_member_count<aggregate_type,index + 1>();
+    }
+}
 
 long function(int,float);
 
@@ -47,6 +60,7 @@ struct aggregate_type
     int a;
     long b;
     double c;
+    std::string d;
 };
 
 int main()
@@ -63,12 +77,14 @@ int main()
     std::cout << "is_same<int,int>::value == " << is_same<int,int>::value << std::endl;
     std::cout << "is_same<int,std::string>::value == " << is_same<int,std::string>::value << std::endl;
 
-    std::cout << "\nstruct aggregate_type\n{\n    int a;\n    long b;\n    double c;\n};\n" << std::endl;
-    std::cout << "aggregate_initializable_with_n_types<aggregate_type,0> == " << aggregate_initializable_with_n_types<aggregate_type,0>::value << std::endl;
-    std::cout << "aggregate_initializable_with_n_types<aggregate_type,1> == "<< aggregate_initializable_with_n_types<aggregate_type,1>::value << std::endl;
-    std::cout << "aggregate_initializable_with_n_types<aggregate_type,2> == "<< aggregate_initializable_with_n_types<aggregate_type,2>::value << std::endl;
-    std::cout << "aggregate_initializable_with_n_types<aggregate_type,3> == "<< aggregate_initializable_with_n_types<aggregate_type,3>::value << std::endl;
-    std::cout << "aggregate_initializable_with_n_types<aggregate_type,4> == "<< aggregate_initializable_with_n_types<aggregate_type,4>::value << std::endl;
+    std::cout << "\nstruct aggregate_type\n{\n    int a;\n    long b;\n    double c;\n    std::string d;\n};\n" << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,0>::value == " << aggregate_initializable_with_n_types<aggregate_type,0>::value << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,1>::value == "<< aggregate_initializable_with_n_types<aggregate_type,1>::value << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,2>::value == "<< aggregate_initializable_with_n_types<aggregate_type,2>::value << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,3>::value == "<< aggregate_initializable_with_n_types<aggregate_type,3>::value << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,4>::value == "<< aggregate_initializable_with_n_types<aggregate_type,4>::value << std::endl;
+    std::cout << "aggregate_initializable_with_n_types<aggregate_type,5>::value == "<< aggregate_initializable_with_n_types<aggregate_type,5>::value << std::endl;
+    std::cout << "get_aggregate_member_count<aggregate_type>::value == " << get_aggregate_member_count<aggregate_type>() << std::endl;
 
     std::cin.get();
     return 0;
