@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "Build",
+			"command": "g++",
+			"args": [
+				"-std=c++20",
+				"-g",
+				"main.cpp",
+				"-o",
+				"main.exe"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "kompilator: \"C:\\Program Files\\MinGW64\\mingw64\\bin\\g++.exe\""
+		}
+	]
+}
